@@ -22,7 +22,7 @@ const (
 	ServoDutyDenominator gpio.Duty = 20
 	ServoFreq                      = 1 * physic.Hertz
 
-	Offset = 90
+	Offset = 10
 )
 
 func main() {
@@ -72,7 +72,7 @@ func main() {
 				return
 			}
 
-			time.Sleep(time.Duration(Offset+angle) * time.Second)
+			time.Sleep(time.Duration(Offset+angle/10) * time.Second)
 
 			_ = s.Stop()
 		}
