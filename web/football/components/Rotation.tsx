@@ -3,9 +3,8 @@ import Slider from "@mui/material/Slider";
 
 export default function Rotation() {
   const rotate = (
-    _event: Event,
-    value: number | number[],
-    _activeThumb: number
+    _event: React.SyntheticEvent | Event,
+    value: number | number[]
   ) => {
     if (value instanceof Array) {
       value = value[0];
@@ -22,7 +21,7 @@ export default function Rotation() {
   return (
     <Slider
       defaultValue={0}
-      onChange={rotate}
+      onChangeCommitted={rotate}
       step={10}
       marks
       min={-90}
