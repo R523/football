@@ -19,8 +19,10 @@ import (
 
 const (
 	ServoDutyNumerator   gpio.Duty = 1
-	ServoDutyDenominator gpio.Duty = 5
-	ServoFreq                      = 1 * physic.MilliHertz
+	ServoDutyDenominator gpio.Duty = 20
+	ServoFreq                      = 1 * physic.Hertz
+
+	Offset = 90
 )
 
 func main() {
@@ -50,20 +52,30 @@ func main() {
 
 	app.Use(logger.New())
 
+	go func() {
+		if err := app.Listen(":1378"); err != nil {
+			pterm.Error.Printf("listen on port 1378 failed %s\n", err)
+		}
+	}()
+
 	s := servo.New(rpi.P1_33, ServoDutyNumerator, ServoDutyDenominator, ServoFreq)
 
 	go func(ch <-chan int) {
-		angle := <-ch
+		for {
+			angle := <-ch
 
-		if err := s.Start(); err != nil {
-			pterm.Error.Printf("cannot start the servo %s", err)
+			pterm.Info.Printf("change angle to %d\n", angle)
 
-			return
+			if err := s.Start(); err != nil {
+				pterm.Error.Printf("cannot start the servo %s", err)
+
+				return
+			}
+
+			time.Sleep(time.Duration(Offset+angle) * time.Second)
+
+			_ = s.Stop()
 		}
-
-		time.Sleep(time.Duration(angle) * time.Second)
-
-		_ = s.Stop()
 	}(ch)
 
 	quit := make(chan os.Signal, 1)
@@ -72,8 +84,4 @@ func main() {
 	<-quit
 
 	pterm.Info.Printf("Bye!\n")
-
-	if err := app.Shutdown(); err != nil {
-		pterm.Error.Printf("http server shutdown failed %s\n", err)
-	}
 }
