@@ -8,7 +8,9 @@ import Container from "@mui/material/Container";
 const Home: NextPage = () => {
   return (
     <>
-      <Head>Football</Head>
+      <Head>
+        <title>Football</title>
+      </Head>
       <Container maxWidth="lg">
         <h1>Football</h1>
         <h4>Rotate the camera at your match</h4>
